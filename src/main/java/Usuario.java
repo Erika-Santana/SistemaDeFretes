@@ -1,6 +1,4 @@
-import Excecoes.CPFInvalidException;
-import Excecoes.IdadeInvalidException;
-import Excecoes.TelefoneInvalidoException;
+import Excecoes.ValorInvalidException;
 
 public class Usuario {
 
@@ -24,13 +22,13 @@ public class Usuario {
     public void setCPF(String SSN) {
 
         try {
-            if (CPF.matches("\\[0-9]{3}\\.\\[0-9]{3}\\.\\[0-9]{3}\\-\\[0-9]{2}")){
+            if (CPF.matches("[0-9]{3}\\.[0-9]{3}\\.[0-9]{3}\\-[0-9]{2}")){
                 CPF = SSN;
             }else{
-                throw new CPFInvalidException();
+                throw new ValorInvalidException("CPF inválido! Por favor digite conforme essas recomendações (XXX.XXX.XXX-XX).");
             }
         }
-        catch(CPFInvalidException CPFInvalid)
+        catch(ValorInvalidException CPFInvalid)
         {
                 CPFInvalid.getMessage();
         }
@@ -39,24 +37,24 @@ public class Usuario {
     public void setIdade(int age){
         try {
             if (age < 0 || age > 120){
-                idade = age;
+                throw new ValorInvalidException("Por valor insira um idade válida!");
             }else{
-                throw new IdadeInvalidException();
+                  idade = age;
             }
         }
-        catch (IdadeInvalidException ageInvalid){
+        catch (ValorInvalidException ageInvalid){
             ageInvalid.getMessage();
         }
     }
 
     public void setTelefone(String fone){
         try{
-            if (fone.matches("\\([0-9]{2}\\)\\[0-9]{5}\\-\\[0-9]{4}")){
+            if (fone.matches("\\([0-9]{2}\\)[0-9]{5}\\-[0-9]{4}")){
                 telefone = fone;
             }else {
-                throw new TelefoneInvalidoException();
+                throw new ValorInvalidException("Valor Inválido! Por favor siga a orientação - (XX)XXXXX-XXXX");
             }
-        }catch( TelefoneInvalidoException telefoneException){
+        }catch( ValorInvalidException telefoneException){
             telefoneException.getMessage();
         }
     }
