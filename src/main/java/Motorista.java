@@ -1,4 +1,4 @@
-public class Motorista {
+public class Motorista extends Usuario{
 
     private String cnh;
     private String[] categorias; //Categoria do carro, ou o peso de carga?
@@ -7,6 +7,16 @@ public class Motorista {
         cnh = carteiraMotorista;
     }
 
+    public Motorista(){
+    }
+
+    public void setCnh(String CNH){
+        cnh = CNH;
+    }
+
+    public String getCnh() {
+        return cnh;
+    }
 
     public void visualizarPedido(){
 

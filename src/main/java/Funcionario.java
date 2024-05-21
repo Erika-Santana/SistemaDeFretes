@@ -2,7 +2,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
-public class Funcionario {
+public class Funcionario extends Usuario {
 
     private String dataAdmissao;
     private String dataDemissao;

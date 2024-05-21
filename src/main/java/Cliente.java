@@ -1,11 +1,17 @@
 import Excecoes.ValorInvalidException;
 
-public class Cliente {
+public class Cliente extends Usuario{
 
     private String CNPJ;
+    private Usuario pessoa;
 
-    public Cliente (String CNPJ){
+    public Cliente (String CNPJ, Usuario objUsuario){
+        super(objUsuario);
         setCNPJ(CNPJ);
+
+    }
+    public Cliente(){
+
     }
 
     //----------------------SET-------------------------//
@@ -24,6 +30,11 @@ public class Cliente {
         }
 
     }
+
+    public String getCNPJ() {
+        return CNPJ;
+    }
+
 
     //----------------------MÉTODOS-------------------------//
 

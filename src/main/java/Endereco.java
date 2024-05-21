@@ -44,4 +44,6 @@ public class Endereco {
     public String getRua() {
         return rua;
     }
+
+    //--------------------------ToString------------------------//
 }

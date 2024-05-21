@@ -1,10 +1,17 @@
-public class Admin {
+public class Admin extends Usuario {
+
+    public Admin (Usuario objUsuario){
+      super(objUsuario);
+    }
+    public Admin (){
+      super();
+    }
 
       public class SistemaDeGerenciamento {
 
         // Métodos para clientes
         public void cadastroCliente() {
-            // Implementação do cadastro de cliente
+            // Implementação do cadastro de cliente // Método igual ao do Cliente
         }
 
         public void visualizarClientes() {
