@@ -4,20 +4,9 @@ import java.util.Scanner;
 
 public class Sistema {
 
-    private ArquivoRepositorio instanciacaoArquivos;
-
-    public static void main(String[] args) {
-        //----------------------CRIACAO ARQUIVOS-------------------------//
-
-        String admin = "ADMIN.xml";
-        String cliente = "CLIENTE.xml";
-        String motorista = "MOTORISTA.xml";
-        String veiculos = "VEICULOS.xml";
-        String pedidos = "PEDIDOS.xml";
-        ArquivoRepositorio  instanciacaoArquivos = new ArquivoRepositorio(admin, cliente, motorista, veiculos, pedidos);
-
-        //-------------------FIM CRIACAO ARQUIVOS-------------------------//
-
+    public static ArquivoRepositorio instanciacaoArquivos  = new ArquivoRepositorio();
+       public static void main(String[] args) {
+           
         int opcao = -1;
         Scanner scanner = new Scanner(System.in);
         Sistema sistem = new Sistema();
@@ -29,7 +18,7 @@ public class Sistema {
         System.out.println("|=================================================================|");
 
         while (opcao != 0) {
-            System.out.println("|                      SELEÇÃO DE LOGIN                            |");
+            System.out.println("|                      SELEÇÃO DE LOGIN                           |");
             System.out.println("| 1 | ADMIN");
             System.out.println("| 2 | CLIENTE");
             System.out.println("| 3 | MOTORISTA");
@@ -67,26 +56,27 @@ public class Sistema {
         System.out.println("| CPF: |");
            while (!testeUsuario.setCPF(scanner.nextLine())){
             System.out.println("| DIGITE O CPF CORRETAMENTE: |");
-            testeUsuario.setCPF(scanner.nextLine());
-        }
+           }
         if (contaExiste(testeUsuario, testeUsuario.getCPF())){
             opcoesLoginAdmin(testeUsuario);
         }else{
             System.out.println("| NOME: |");
             testeUsuario.setNome(scanner.nextLine());
             System.out.println("| IDADE: |");
-                while(!testeUsuario.setIdade(scanner.nextInt())){
+            while(!testeUsuario.setIdade(scanner.nextInt())){
                 System.out.println("| DIGITE UMA IDADE VÁLIDA: |");
-                testeUsuario.setIdade(scanner.nextInt());
+
+            }
+
+            if (scanner.hasNextLine()) {
+                scanner.nextLine();
             }
 
             System.out.println("| TELEFONE: |");
             while(!testeUsuario.setTelefone(scanner.nextLine())){
                 System.out.println("| DIGITE UM TELEFONE VÁLIDO: |");
-                testeUsuario.setTelefone(scanner.nextLine());
-            }
 
-            testeUsuario.setTelefone(scanner.nextLine());
+            }
             System.out.println("| LOGIN: |");
             testeUsuario.setLogin(scanner.nextLine());
             System.out.println("| SENHA: |");
@@ -94,18 +84,17 @@ public class Sistema {
             System.out.println("| ENDEREÇO: |");
             testeUsuario.setEndereco(scanner.nextLine());
 
+            instanciacaoArquivos.cadastrarUsuario(testeUsuario);
             opcoesLoginAdmin(testeUsuario);
         }
 
     }
 
-    //Tornar generico depois
-    public void opcoesLoginAdmin(Admin usuario){
+     public void opcoesLoginAdmin(Admin usuario){
         int opcao = -1;
         Scanner scan = new Scanner(System.in);
-        ArquivoRepositorio arquivos = new ArquivoRepositorio();
 
-        while(opcao != 0){
+               while(opcao != 0){
 
             System.out.println("|=================================================================|");
             System.out.println("|                       INTERFACE ADMIN                           |");
@@ -114,7 +103,7 @@ public class Sistema {
             System.out.println("|=================================================================|");
             System.out.println("| 1 | CADASTRAR CLIENTE");
             System.out.println("| 2 | CADASTRAR MOTORISTA");
-            //System.out.println("| 3 | CADASTRAR PEDIDO");
+            System.out.println("| 3 | CADASTRAR PEDIDO");
             System.out.println("| 4 | CADASTRAR VEÍCULO");
             System.out.println("| 5 | ACESSAR CLIENTES CADASTRADOS");
             System.out.println("| 6 | ACESSAR MOTORISTAS CADASTRADOS");
@@ -140,7 +129,7 @@ public class Sistema {
                     //Veiculo
                     break;
                 case 5:
-                    arquivos.imprimirDados(usuario);
+                    instanciacaoArquivos.imprimirDados(usuario);
                     break;
             }
 
@@ -173,15 +162,16 @@ public class Sistema {
             Usuario.setIdade(scanner.nextInt());
         }
 
+        if (scanner.hasNextLine()) {
+            scanner.nextLine();
+        }
         System.out.println("| TELEFONE: |");
 
         while(!Usuario.setTelefone(scanner.nextLine())){
             System.out.println("| DIGITE UM TELEFONE VÁLIDO: |");
-            Usuario.setTelefone(scanner.nextLine());
 
         }
 
-        Usuario.setTelefone(scanner.nextLine());
         System.out.println("| LOGIN: |");
         Usuario.setLogin(scanner.nextLine());
         System.out.println("| SENHA: |");
@@ -209,8 +199,7 @@ public class Sistema {
 
     public <T extends Usuario> boolean contaExiste(T Usuario, String CPFDigitado){
 
-        ArquivoRepositorio arquivoRepositorio = new ArquivoRepositorio();
-        if (arquivoRepositorio.contaExiste(Usuario, CPFDigitado)){
+        if (instanciacaoArquivos.contaExiste(Usuario, CPFDigitado)){
             return true;
         }else{
             return false;

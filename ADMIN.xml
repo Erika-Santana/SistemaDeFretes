@@ -1,2 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<ARQUIVO/>
+<Arquivo>
+    <Pessoas>
+        501.078.348-71
+        <CPF>501.078.348-71</CPF>
+        <nome>Érika Santana Alves</nome>
+        <endereco>João Altéia</endereco>
+        <telefone>(16)99290-3904</telefone>
+        <idade>24</idade>
+        <login>AkireBlake</login>
+        <senha>4321</senha>
+    </Pessoas>
+</Arquivo>

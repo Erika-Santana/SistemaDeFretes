@@ -76,7 +76,7 @@ public class Usuario {
                 throw new ValorInvalidException("Valor Inválido! Por favor siga a orientação - (XX)XXXXX-XXXX");
             }
         }catch( ValorInvalidException telefoneException){
-            telefoneException.getMessage();
+            System.out.println(telefoneException.getMessage());
             return false;
         }
     }

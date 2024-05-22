@@ -9,31 +9,33 @@ import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.File;
+import java.text.Normalizer;
 import java.util.Scanner;
 
+
 public class ArquivoRepositorio {
+
+    public static final String ADMIN_ARQUIVO = "ADMIN.xml";
+    public static final String CLIENTE_ARQUIVO = "CLIENTE.xml";
+    public static final String MOTORISTA_ARQUIVO = "MOTORISTA.xml";
+    public static final String VEICULOS_ARQUIVO = "VEICULOS.xml";
+    public static final String PEDIDOS_ARQUIVO = "PEDIDOS.xml";
 
     private File arquivoPedidos;
     private File arquivoVeiculos;
     private File arquivoADM;
     private File arquivoMotorista;
-    private File arquivoCliente;
-    public static String arquivoNomeMotorista;
-    public static String arquivoNomeCliente;
-    public static String arquivoNomeADM;
+    public File arquivoCliente;
 
-    public ArquivoRepositorio(String admin, String motorista, String cliente, String veiculo, String pedido) {
-        arquivoNomeMotorista = motorista;
-        arquivoNomeADM = admin;
-        arquivoNomeCliente = cliente;
-        arquivoADM = criarArquivo(admin);
-        arquivoCliente = criarArquivo(cliente);
-        arquivoPedidos = criarArquivo(pedido);
-      //  arquivoMotorista = criarArquivo(motorista);
-      //  arquivoVeiculos = criarArquivo(veiculo);
+    public ArquivoRepositorio() {
+        arquivoADM = criarArquivo(ADMIN_ARQUIVO);
+        arquivoPedidos = criarArquivo(PEDIDOS_ARQUIVO);
+        arquivoVeiculos = criarArquivo(VEICULOS_ARQUIVO);
+        arquivoCliente = criarArquivo(CLIENTE_ARQUIVO);
+        arquivoMotorista = criarArquivo(MOTORISTA_ARQUIVO);
+
     }
 
-    public ArquivoRepositorio() {}
 
     //---------------------------MÉTODOS DE ABRIR E FECHAR OS ARQUIVOS------------------------------/
     public static File criarArquivo(String nomeArquivo) {
@@ -49,7 +51,7 @@ public class ArquivoRepositorio {
                 DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
                 Document doc = docBuilder.newDocument();
 
-                Element rootElement = doc.createElement("ARQUIVO");
+                Element rootElement = doc.createElement("Arquivo");
                 doc.appendChild(rootElement);
 
                 TransformerFactory transFactory = TransformerFactory.newInstance();
@@ -86,6 +88,7 @@ public class ArquivoRepositorio {
 
     public static void fecharDocumento(Document doc, File nomeArquivo) {
         try {
+
             if (nomeArquivo == null || !nomeArquivo.exists()) {
                 System.out.println("Arquivo não existe!");
             }
@@ -105,101 +108,83 @@ public class ArquivoRepositorio {
         Document doc;
         File arquivo = null;
 
-        if (usuario instanceof Cliente) {
-            doc = abrirDocumento(arquivoCliente);
-            arquivo = arquivoCliente;
-        } else if (usuario instanceof Admin) {
-            doc = abrirDocumento(arquivoADM);
-            arquivo = arquivoADM;
-        } else if (usuario instanceof Motorista) {
-            doc = abrirDocumento(arquivoMotorista);
-            arquivo = arquivoMotorista;
-        } else {
-            throw new IllegalArgumentException("Tipo de usuário não suportado.");
-        }
+        doc = abrirDocPorTipoUsuario(usuario);
 
         if (doc == null) {
-            throw new RuntimeException("Erro ao abrir o documento XML.");
+            throw new RuntimeException("Erro ao abrir o documento XML. Está recebenmdo valor nulo");
         }
 
-        Element rootElement = (Element) doc.getElementsByTagName("Pessoas").item(0);
+        Element rootElement = (Element) doc.getElementsByTagName("Arquivo").item(0);
+
+        Element elementPessoa = doc.createElement("Pessoas");
+        elementPessoa.setTextContent(usuario.getCPF());
+        rootElement.appendChild(elementPessoa);
 
         Element elementCPF = doc.createElement("CPF");
         elementCPF.setTextContent(usuario.getCPF());
-        rootElement.appendChild(elementCPF);
+        elementPessoa.appendChild(elementCPF);
 
         Element elementNome = doc.createElement("nome");
         elementNome.setTextContent(usuario.getNome());
-        elementCPF.appendChild(elementNome);
+        elementPessoa.appendChild(elementNome);
 
         Element elementEndereco = doc.createElement("endereco");
         elementEndereco.setTextContent(usuario.getEndereco());
-        elementCPF.appendChild(elementEndereco);
+        elementPessoa.appendChild(elementEndereco);
 
         Element elementTelefone = doc.createElement("telefone");
         elementTelefone.setTextContent(usuario.getTelefone());
-        elementCPF.appendChild(elementTelefone);
+        elementPessoa.appendChild(elementTelefone);
 
         Element elementIdade = doc.createElement("idade");
         elementIdade.setTextContent(String.valueOf(usuario.getIdade()));
-        elementCPF.appendChild(elementIdade);
+        elementPessoa.appendChild(elementIdade);
 
         Element elementLogin = doc.createElement("login");
         elementLogin.setTextContent(usuario.getLogin());
-        elementCPF.appendChild(elementLogin);
+        elementPessoa.appendChild(elementLogin);
 
         Element elementSenha = doc.createElement("senha");
         elementSenha.setTextContent(usuario.getSenha());
-        elementCPF.appendChild(elementSenha);
+        elementPessoa.appendChild(elementSenha);
 
         if (usuario instanceof Cliente) {
             Element elementCNPJ = doc.createElement("CNPJ");
             elementCNPJ.setTextContent(((Cliente) usuario).getCNPJ());
-            elementCPF.appendChild(elementCNPJ);
+            elementPessoa.appendChild(elementCNPJ);
         }
 
         if (usuario instanceof Motorista) {
             Element elementCNH = doc.createElement("CNH");
             elementCNH.setTextContent(((Motorista) usuario).getCnh());
-            elementCPF.appendChild(elementCNH);
+            elementPessoa.appendChild(elementCNH);
         }
-
+        arquivo = retornaNomeArquivo(usuario);
         fecharDocumento(doc, arquivo);
     }
 
     public <T extends Usuario> void imprimirDados(T usuario) {
-        Document doc;
-        File arquivo = null;
 
-        if (usuario instanceof Cliente) {
-            doc = abrirDocumento(arquivoCliente);
-            arquivo = arquivoCliente;
-        } else if (usuario instanceof Admin) {
-            doc = abrirDocumento(arquivoADM);
-            arquivo = arquivoADM;
-        } else if (usuario instanceof Motorista) {
-            doc = abrirDocumento(arquivoMotorista);
-            arquivo = arquivoMotorista;
-        } else {
-            throw new IllegalArgumentException("Tipo de usuário não suportado.");
-        }
+        File nomeArquivo = null;
+        Document doc;
+        doc = abrirDocPorTipoUsuario(usuario);
+
 
         if (doc == null) {
-            throw new RuntimeException("Erro ao abrir o documento XML.");
+            throw new RuntimeException("Erro ao abrir o documento XML. Está recebendo valor nulo");
         }
-
         NodeList cpfs = doc.getElementsByTagName("CPF");
 
         for (int i = 0; i < cpfs.getLength(); i++) {
             Element cpfElement = (Element) cpfs.item(i);
             if (cpfElement.getTextContent().equals(usuario.getCPF())) {
                 System.out.println("CPF: " + cpfElement.getTextContent());
-                System.out.println("NOME: " + cpfElement.getElementsByTagName("NOME").item(0).getTextContent());
-                System.out.println("ENDERECO: " + cpfElement.getElementsByTagName("ENDERECO").item(0).getTextContent());
-                System.out.println("TELEFONE: " + cpfElement.getElementsByTagName("TELEFONE").item(0).getTextContent());
-                System.out.println("IDADE: " + cpfElement.getElementsByTagName("IDADE").item(0).getTextContent());
-                System.out.println("LOGIN: " + cpfElement.getElementsByTagName("LOGIN").item(0).getTextContent());
-                System.out.println("SENHA: " + cpfElement.getElementsByTagName("SENHA").item(0).getTextContent());
+                System.out.println("NOME: " + cpfElement.getElementsByTagName("nome").item(0).getTextContent());
+                System.out.println("ENDERECO: " + cpfElement.getElementsByTagName("endereco").item(0).getTextContent());
+                System.out.println("TELEFONE: " + cpfElement.getElementsByTagName("telefone").item(0).getTextContent());
+                System.out.println("IDADE: " + cpfElement.getElementsByTagName("idade").item(0).getTextContent());
+                System.out.println("LOGIN: " + cpfElement.getElementsByTagName("login").item(0).getTextContent());
+                System.out.println("SENHA: " + cpfElement.getElementsByTagName("senha").item(0).getTextContent());
 
                 if (usuario instanceof Cliente) {
                     System.out.println("CNPJ: " + cpfElement.getElementsByTagName("CNPJ").item(0).getTextContent());
@@ -211,7 +196,8 @@ public class ArquivoRepositorio {
             }
         }
 
-        fecharDocumento(doc, arquivo);
+        nomeArquivo = retornaNomeArquivo(usuario);
+        fecharDocumento(doc, nomeArquivo);
     }
 
     public <T> void atualizarArquivo(T classeRecebida) {
@@ -269,7 +255,41 @@ public class ArquivoRepositorio {
         }
     }
 
-    public boolean contaExiste(Usuario userCPF, String CPF){
+    public <T extends Usuario> Document abrirDocPorTipoUsuario(T usuario) {
+
+        Document docRecebido = null;
+
+        if (usuario instanceof Cliente) {
+            docRecebido = abrirDocumento(arquivoCliente);
+        }
+        if (usuario instanceof Admin) {
+            docRecebido = abrirDocumento(arquivoADM);
+        }
+        if (usuario instanceof Motorista) {
+            docRecebido = abrirDocumento(arquivoMotorista);
+        }
+
+        return docRecebido;
+    }
+
+    public <T extends Usuario> File retornaNomeArquivo(T usuario) {
+
+        File nomeArquivo = null;
+
+        if (usuario instanceof Cliente) {
+            nomeArquivo = arquivoCliente;
+        }
+        if (usuario instanceof Admin) {
+            nomeArquivo = arquivoADM;
+        }
+        if (usuario instanceof Motorista) {
+            nomeArquivo = arquivoMotorista;
+        }
+
+        return nomeArquivo;
+    }
+
+   /* public boolean contaExiste(Usuario userCPF, String CPF){
 
         String senha;
         Scanner scan = new Scanner(System.in);
@@ -281,18 +301,7 @@ public class ArquivoRepositorio {
                 for (int i = 0; i < cpfList.getLength(); i++ ){
                     Element elementosDaLista = (Element) cpfList.item(i);
                     if (CPF.equals(elementosDaLista.getTextContent())){
-                       while (true){
-                           System.out.println("| DIGITE A SENHA: |");
-                           senha = scan.nextLine();
 
-                           String senhaCPF = String.valueOf(elementosDaLista.getElementsByTagName("SENHA").item(0).getTextContent());
-
-                           if (senha.equals(senhaCPF)){
-                               System.out.println("| LOADING... |");
-                               return true;
-                           }else {
-                               System.out.println("| SENHA INCORRETA. TENTE NOVAMENTE. |");
-                           }
 
                        }
 
@@ -356,19 +365,76 @@ public class ArquivoRepositorio {
 
         return false;
 
+    }*/
+
+    public <T extends Usuario> boolean contaExiste(T usuario, String CPF) {
+
+        Document document;
+        document = abrirDocPorTipoUsuario(usuario);
+
+        if (document != null) {
+            NodeList CPFList = document.getElementsByTagName("CPF");
+            NodeList senhaList = document.getElementsByTagName("senha");
+            NodeList loginList = document.getElementsByTagName("login");
+               for (int i = 0; i < CPFList.getLength(); i++) {
+
+                Element elementDaLista = (Element) CPFList.item(i);
+                Element elementDaListaSenha = (Element) senhaList.item(i);
+                Element elementDaListaLogin = (Element) loginList.item(i);
+
+                if (otimizaCPF(String.valueOf(elementDaLista.getTextContent()), CPF)) {
+                    realizarLogin(elementDaListaSenha.getTextContent(), elementDaListaLogin.getTextContent());
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
+    public boolean otimizaCPF(String cpfSalvo, String cpfDigitado) {
+        cpfSalvo = cpfSalvo.replaceAll("\\D", "");
+        cpfDigitado = cpfDigitado.replaceAll("\\D", "");
 
+        //Por que precisa usar o normalizer?
+        cpfSalvo = Normalizer.normalize(cpfSalvo, Normalizer.Form.NFC);
+        cpfDigitado = Normalizer.normalize(cpfDigitado, Normalizer.Form.NFC);
 
+        System.out.println("DEPURAÇÃO CPF SALVO: " + cpfSalvo);
+        System.out.println("DEPURAÇÃO CPF Digitado: " + cpfDigitado);
+
+        return cpfSalvo.equals(cpfDigitado);
+    }
+
+    public <T extends Usuario> boolean realizarLogin(String senhaList, String loginList) {
+        String senha;
+        String login;
+        Scanner scan = new Scanner(System.in);
+
+        while (true) {
+            System.out.println("| DIGITE O LOGIN: |");
+            login = scan.nextLine();
+            System.out.println("| DIGITE A SENHA: |");
+            senha = scan.nextLine();
+
+            if (senha.equals(senhaList) && login.equals(loginList)) {
+                System.out.println("| LOADING... |");
+                return true;
+            } else {
+                System.out.println("| SENHA E LOGIN INCORRETOS. TENTE NOVAMENTE. |");
+            }
+        }
+
+    }
 
     //---------------------------MÉTODOS DE REGISTRO DE PEDIDOS E VEICULOS------------------------------//
 
-    public void registrarPedido(String CPF, Pedidos pedidoUsuario){
+    public void registrarPedido(String CPF, Pedidos pedidoUsuario) {
 
         Document docRecebido = abrirDocumento(arquivoPedidos);
         Pedidos pedido = new Pedidos();
 
-        Element rootElement = (Element)docRecebido.getElementsByTagName("Pedidos");
+        Element rootElement = (Element) docRecebido.getElementsByTagName("Pedidos");
         //double peso, int quantidade, String tipoCarga, String nome,
         //                   Endereco enderecoEntrega, Data dataMaxEntrega, double valor, double frete, Endereco enderecoColeta, String status
 
@@ -409,6 +475,6 @@ public class ArquivoRepositorio {
         cpfElement.appendChild(dataMAX);
 
     }
-
-
 }
+
+
